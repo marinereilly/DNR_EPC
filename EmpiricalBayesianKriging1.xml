@@ -1,0 +1,3 @@
+<?xml version="1.0"?>
+<model name="EmpiricalBayesianKriging"><dataset Label="Dataset" ParamName="dataset1" dataset-type="DSA-X0"/><enum name="KrigingResultType">Prediction</enum><enum name="TransformationType">EBKTransformation_None</enum><enum name="SemivariogramModelType">EBKSemivariogramModel_Power</enum><value name="VariogramSize">20</value><value name="Overlapping">5</value><value name="Simulation">100</value><model name="NeighbourSearch"><enum name="Type">Standard-NOSectors-NOEllipse</enum><value name="NeighboursMax" auto="false">15</value><value name="NeighboursMin" auto="false">3</value><value name="MajorSemiaxis" auto="false">0.23561899499415184</value></model>
+</model>
