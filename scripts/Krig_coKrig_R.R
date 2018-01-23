@@ -1,6 +1,7 @@
 #####Packages#####
 library(tidyverse)
 library(sf)
+library(sp)
 library(gstat)
 library(dadjoke)
 
@@ -61,6 +62,30 @@ DO_mg<-lm(PO_flux~DO_mg, data=chesflux)
 ggplotRegression(DO_mg)
 ggsave("plots_images/DOmg_reg.png")
 
+upper_depth_reg<-lm(P_flux~ Depth, data=b_flux_sub)
+ggplotRegression(upper_depth_reg)
+ggsave("plots_images/upper_depth_reg.png")
+upper_sal_reg<-lm(P_flux~ Salinity, data=b_flux_sub)
+ggplotRegression(upper_sal_reg)
+ggsave("plots_images/upper_sal_reg.png")
+upper_DO_reg<-lm(P_flux~ DO_sat, data=b_flux_sub)
+ggplotRegression(upper_DO_reg)
+ggsave("plots_images/upper_DOSat_reg.png")
+upper_DO_mg<-lm(P_flux~DO_mg, data=b_flux_sub)
+ggplotRegression(upper_DO_mg)
+ggsave("plots_images/upper_DOmg_reg.png")
+
 #####Mapping homogeniety#####
-summary(depth_reg)
-summary()
+depth_1998<-lm(P_flux~Depth,data=flux_1998)
+summary(depth_1998)
+sal_1998<-lm(P_flux~Salinity,data=flux_1998)
+summary(sal_1998)
+DO_1998<-lm(P_flux~DO_sat,data=flux_1998)
+summary(DO_1998)
+
+a<-rstandard(depth_reg)#####You are having issues here because there are 
+#some NA points so the length of the residuals is different than the length of the data
+mydata<-data.frame(a, chesflux$Longitude.DD, chesflux$Latitude.DD)
+coordinates(mydata)<-c(chesflux.Longit)
+bubble(flux_1998$geometry,"a",col = c("blue","orange"),
+       main = "Residulas", xlab = "Xcoordinates", ylab = "ycoordinates")
