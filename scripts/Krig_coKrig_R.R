@@ -1,10 +1,11 @@
 #####Packages#####
 library(tidyverse)
 library(sf)
+library(gstat)
 library(dadjoke)
 
-
 #####Load Data#####
+###Full data
 chesflux<-read.csv("CHESFLUX.csv")
 chesflux$Month<-factor(chesflux$Month, levels= c("December","January", "February", "March", "April", 
                                                  "May", "June", "July", "August", "September", "October", "November"))
@@ -16,6 +17,19 @@ chesflux_sf<-chesflux %>%
   rename("x" = "Longitude.DD", "y"="Latitude.DD") %>% 
   st_as_sf(., coords = c("x", "y")) %>% 
   st_set_crs("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
+###bounded data
+b_flux<-st_read("ARC_files/chesflux.shp")
+b_flux_sub<- b_flux %>%
+  filter(In_Bound=="Y") %>%
+  rename(Depth="Wt_D___", Salinity="BW_Sal", DO_sat="BW_DO__M", DO_mg="BW_DO___", P_flux="PO4_F__")
+b_flux_sub$Month<-factor(b_flux_sub$Month, 
+                         levels= c("December","January", "February", "March", "April","May", "June", "July", 
+                                   "August", "September", "October", "November"))
+
+###Subset 1998 data
+flux_1998<-b_flux_sub %>%
+  filter(Year==1998)
+
 
 #####Exploring Colinearity#####
 
@@ -47,3 +61,6 @@ DO_mg<-lm(PO_flux~DO_mg, data=chesflux)
 ggplotRegression(DO_mg)
 ggsave("plots_images/DOmg_reg.png")
 
+#####Mapping homogeniety#####
+summary(depth_reg)
+summary()
