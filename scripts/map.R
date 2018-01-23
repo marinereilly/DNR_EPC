@@ -28,7 +28,7 @@ plot(st_geometry(summer_flux_sf))
 st_write(summer_flux_sf,"summer_flux2.shp")
 
 #####Loading the shapefile created in ArcMap where points were selected by being within the AOI#####
-b_flux<-st_read("chesflux.shp")
+b_flux<-st_read("ARC_files/chesflux.shp")
 b_flux_sub<- b_flux %>% 
   filter(In_Bound=="Y") %>% 
   rename(Depth="Wt_D___")
