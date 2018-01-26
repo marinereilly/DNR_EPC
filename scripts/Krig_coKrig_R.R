@@ -4,6 +4,7 @@ library(sf)
 library(sp)
 library(gstat)
 library(dadjoke)
+library(lubridate)
 
 #####Load Data#####
 ###Full data
@@ -18,15 +19,14 @@ chesflux_sf<-chesflux %>%
   rename("x" = "Longitude.DD", "y"="Latitude.DD") %>% 
   st_as_sf(., coords = c("x", "y")) %>% 
   st_set_crs("+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs")
-###bounded data
-b_flux<-st_read("ARC_files/chesflux.shp")
-b_flux_sub<- b_flux %>%
-  filter(In_Bound=="Y") %>%
+###bounded data ## pulling shpaefiles into arc and back switched NA values to 0 
+#so make sure you rerun code with newlycreated layers
+b_flux_sub %>% 
   rename(Depth="Wt_D___", Salinity="BW_Sal", DO_sat="BW_DO__M", DO_mg="BW_DO___", P_flux="PO4_F__")
 b_flux_sub$Month<-factor(b_flux_sub$Month, 
                          levels= c("December","January", "February", "March", "April","May", "June", "July", 
                                    "August", "September", "October", "November"))
-
+b_flux_sub$Date <-ymd(b_flux_sub$Date)
 ###Subset 1998 data
 flux_1998<-b_flux_sub %>%
   filter(Year==1998)
@@ -89,3 +89,19 @@ mydata<-data.frame(a, chesflux$Longitude.DD, chesflux$Latitude.DD)
 coordinates(mydata)<-c(chesflux.Longit)
 bubble(flux_1998$geometry,"a",col = c("blue","orange"),
        main = "Residulas", xlab = "Xcoordinates", ylab = "ycoordinates")
+
+
+Z<-b_flux_sub %>% 
+  select(Date, Year, Depth, Salinity, BW_T___, DO_sat, DO_mg, P_flux, -geometry) 
+st_geometry(Z) <- NULL
+
+pairs(Z, lower.panel = panel.smooth2, upper.panel = panel.cor, diag.panel = panel.hist)
+
+corvif(Z[,c(-1,-7)])
+
+
+b<-lm(DO_sat ~ DO_mg, data = b_flux_sub)
+a<-ggplotRegression(b)
+a
+#####Exploring for outliers#####
+
