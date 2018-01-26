@@ -22,10 +22,6 @@ flux_sites_sf <-st_as_sf(flux_sites, coords = c("x", "y")) %>%
 plot(st_geometry(flux_sites_sf))
 st_write(flux_sites_sf, "fluxsites.shp")
 
-summer_flux_sf<-b_flux_sub %>% 
-  filter(.$Month=="July"|.$Month=="August"|.$Month=="September" )
-plot(st_geometry(summer_flux_sf))
-st_write(summer_flux_sf,"summer_flux2.shp")
 
 #####Loading the shapefile created in ArcMap where points were selected by being within the AOI#####
 b_flux<-st_read("ARC_files/chesflux.shp")
@@ -34,8 +30,25 @@ b_flux_sub<- b_flux %>%
   rename(Depth="Wt_D___")
 b_flux_sub$Month<-factor(b_flux_sub$Month, levels= c("December","January", "February", "March", "April", 
                                                  "May", "June", "July", "August", "September", "October", "November"))
-boundary<-st_read("boundary2.shp")
 
+summer_flux_sf<-b_flux_sub %>% 
+  filter(.$Month=="July"|.$Month=="August"|.$Month=="September" )
+plot(st_geometry(summer_flux_sf))
+st_write(summer_flux_sf,"summer_flux2.shp")
+
+boundary<-st_read("ARC_files/boundary2.shp")
+
+c<-ggplot(data=chesflux_sf)+geom_sf(data=boundary)+geom_sf()+theme_minimal()
+c
+
+pts<-st_transform(x = chesflux_sf, crs=st_crs(boundary))
+p<-st_intersection(boundary, pts)
+
+View(p)
+d<-ggplot(p)+geom_sf(data=boundary, fill=NA, color="red")+geom_sf()+theme_minimal()
+d
+
+b_flux_sub<-p
 
 #####Frequency Distributions#####
 a<-b_flux_sub %>%
