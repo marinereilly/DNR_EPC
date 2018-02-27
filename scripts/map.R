@@ -35,7 +35,7 @@ summer_flux_sf<-b_flux_sub %>%
   filter(.$Month=="July"|.$Month=="August"|.$Month=="September" )
 plot(st_geometry(summer_flux_sf))
 st_write(summer_flux_sf,"summer_flux2.shp")
-
+#####Heres how you get the non screwy points in the AOI#####
 boundary<-st_read("ARC_files/boundary2.shp")
 
 c<-ggplot(data=chesflux_sf)+geom_sf(data=boundary)+geom_sf()+theme_minimal()
@@ -72,6 +72,17 @@ e<-ggplot(flux_1998)+
   geom_histogram(aes(logP))
 e
 
+a<-not_summer_flux %>%
+  ggplot()
+b<-a+geom_histogram(aes(Month), color = "black", fill = "steelblue3", stat = "count")+
+  ggtitle("Not Summer Monthly Frequency Distribution")+
+  theme_minimal()
+b
+
+c<-a+geom_histogram(aes(Depth), binwidth = 1, color = "black", fill = "steelblue3")+
+  ggtitle("Not Summer Depth Frequency Distribution")+
+  theme_minimal()
+c
 #####Map#####
 flux_1996<-b_flux_sub %>% 
   filter(Year==1996)
